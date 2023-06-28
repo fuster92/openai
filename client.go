@@ -13,7 +13,11 @@ const baseUrl = "https://api.openai.com"
 
 type Client struct {
 	httpClient *http.Client
-	baseUrl    string
+	BaseUrl    string
+}
+
+func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	return c.httpClient.Do(req)
 }
 
 func (c *Client) Chat(r *ChatRequest) (*ChatResponse, error) {
@@ -23,7 +27,7 @@ func (c *Client) Chat(r *ChatRequest) (*ChatResponse, error) {
 		return nil, fmt.Errorf("error sending chat request: %v", err)
 	}
 	resp, err := c.httpClient.Post(
-		fmt.Sprintf("%s/%s", c.baseUrl, chatEndpoint),
+		fmt.Sprintf("%s/%s", c.BaseUrl, chatEndpoint),
 		"application/json",
 		bytes.NewBuffer(data),
 	)
@@ -53,6 +57,6 @@ func NewClient(token, version string) *Client {
 	}
 	return &Client{
 		httpClient: client,
-		baseUrl:    fmt.Sprintf("%s/%s", baseUrl, version),
+		BaseUrl:    fmt.Sprintf("%s/%s", baseUrl, version),
 	}
 }
